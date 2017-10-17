@@ -1,6 +1,15 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     compileSdkVersion ver.compileSdk
     buildToolsVersion ver.buildTools
     defaultConfig {
@@ -18,10 +27,24 @@ android {
 
 dependencies {
     implementation(
-            libs.appcompat,
-            libs.constraintLayout
+            libs.supportAppcompat,
+            libs.constraintLayout,
+
+            libs.dagger,
+            libs.rxJava,
+            libs.rxAndroid,
+
+            libs.retrofit2,
+            libs.retrofitConverter,
+
+            libs.optional
     )
 }
+
+dependencies {
+    annotationProcessor libs.daggerCompiler
+}
+
 
 dependencies {
     testImplementation 'junit:junit:4.12'
