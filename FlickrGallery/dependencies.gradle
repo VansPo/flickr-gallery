@@ -1,0 +1,19 @@
+ext.gradlePlugins = [
+        gradle: 'com.android.tools.build:gradle:3.0.0-rc1'
+]
+
+ext.ver = [
+        minSdk    : 16,
+        compileSdk: 26,
+        targetSdk : 26,
+        buildTools: "26.0.2",
+
+        support: "26.1.0"
+]
+
+ext.libs = [
+        appcompat: "com.android.support:appcompat-v7:$ver.support",
+        constraintLayout: 'com.android.support.constraint:constraint-layout:1.0.2',
+
+        junit: 'junit:junit:4.12'
+]
