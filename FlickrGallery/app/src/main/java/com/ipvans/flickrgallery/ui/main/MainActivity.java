@@ -1,5 +1,7 @@
 package com.ipvans.flickrgallery.ui.main;
 
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -32,9 +34,12 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private MainAdapter adapter;
+    private SwipeRefreshLayout swipe;
     private View empty;
     private View error;
     private View progress;
+
+    private Snackbar snackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recycler);
+        swipe = findViewById(R.id.swipe);
         empty = findViewById(R.id.empty);
         error = findViewById(R.id.error);
         progress = findViewById(R.id.progress);
@@ -62,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         adapter = new MainAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        swipe.setOnRefreshListener(() -> mainPresenter.search("", true));
     }
 
     @Override
@@ -95,31 +103,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showLoading() {
+        dismissSnackbar();
         if (adapter.isEmpty()) {
             progress.setVisibility(View.VISIBLE);
             error.setVisibility(View.GONE);
             empty.setVisibility(View.GONE);
+        } else {
+            swipe.setRefreshing(true);
         }
     }
 
     private void showError(Throwable e) {
+        dismissSnackbar();
         if (adapter.isEmpty()) {
             progress.setVisibility(View.GONE);
             error.setVisibility(View.VISIBLE);
             empty.setVisibility(View.GONE);
+        } else {
+            swipe.setRefreshing(false);
+            snackbar = Snackbar.make(recyclerView, R.string.error, Snackbar.LENGTH_SHORT);
+            snackbar.show();
         }
     }
 
     private void showContent(List<FeedItem> items) {
+        dismissSnackbar();
         adapter.replace(items);
         progress.setVisibility(View.GONE);
         error.setVisibility(View.GONE);
         empty.setVisibility(View.GONE);
+        swipe.setRefreshing(false);
     }
 
     private void showEmpty() {
+        dismissSnackbar();
         progress.setVisibility(View.GONE);
         error.setVisibility(View.GONE);
         empty.setVisibility(View.VISIBLE);
+        swipe.setRefreshing(false);
+    }
+
+    private void dismissSnackbar() {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
     }
 }

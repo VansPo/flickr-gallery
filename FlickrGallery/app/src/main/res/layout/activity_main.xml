@@ -15,23 +15,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <include
             android:id="@+id/empty"
-            android:visibility="gone"
-            layout="@layout/view_empty"/>
+            layout="@layout/view_empty"
+            android:visibility="gone" />
+
         <include
             android:id="@+id/error"
-            android:visibility="gone"
-            layout="@layout/view_error"/>
+            layout="@layout/view_error"
+            android:visibility="gone" />
+
         <include
             android:id="@+id/progress"
-            android:visibility="gone"
-            layout="@layout/view_loading"/>
+            layout="@layout/view_loading"
+            android:visibility="gone" />
 
     </FrameLayout>
 

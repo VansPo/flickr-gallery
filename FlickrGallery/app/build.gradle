@@ -30,6 +30,7 @@ dependencies {
             libs.supportAppcompat,
             libs.constraintLayout,
             libs.supportRecyclerView,
+            libs.supportDesign,
             libs.glide,
 
             libs.dagger,
