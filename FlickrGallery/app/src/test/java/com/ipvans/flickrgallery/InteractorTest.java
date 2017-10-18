@@ -37,7 +37,7 @@ public class InteractorTest {
     @Test
     public void getActualFeed() {
         interactor.observe()
-                .filter(it -> !it.isLoading())
+//                .filter(it -> !it.isLoading())
                 .subscribe(observer);
 
         interactor.getFeed(new UpdateEvent("", true));
@@ -45,7 +45,7 @@ public class InteractorTest {
         observer.awaitCount(1);
         observer.dispose();
         observer.assertNoErrors();
-        assertEquals(null, ((Response<Feed>)observer.getEvents().get(0).get(0)).getError());
+        assertEquals(null, observer.values().get(0).getError());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class InteractorTest {
         observer.awaitCount(1);
         observer.dispose();
         observer.assertNoErrors();
-        Feed feed = ((Response<Feed>)observer.getEvents().get(0).get(0)).getData();
+        Feed feed = observer.values().get(0).getData();
         assertEquals("test title", feed.getTitle());
     }
 
