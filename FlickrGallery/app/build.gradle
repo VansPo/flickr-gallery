@@ -36,6 +36,8 @@ dependencies {
 
             libs.retrofit2,
             libs.retrofitConverter,
+            libs.retrofitRxJava2,
+            libs.okhttpLogger,
 
             libs.optional
     )

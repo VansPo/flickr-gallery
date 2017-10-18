@@ -12,7 +12,7 @@ public class FeedItem implements Parcelable {
     private Media media;
     private String published;
     private String author;
-    private List<String> tags;
+    private String tags;
 
     public FeedItem() {
     }
@@ -23,7 +23,22 @@ public class FeedItem implements Parcelable {
         media = in.readParcelable(Media.class.getClassLoader());
         published = in.readString();
         author = in.readString();
-        tags = in.createStringArrayList();
+        tags = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(link);
+        dest.writeParcelable(media, flags);
+        dest.writeString(published);
+        dest.writeString(author);
+        dest.writeString(tags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<FeedItem> CREATOR = new Creator<FeedItem>() {
@@ -37,21 +52,6 @@ public class FeedItem implements Parcelable {
             return new FeedItem[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(link);
-        dest.writeParcelable(media, flags);
-        dest.writeString(published);
-        dest.writeString(author);
-        dest.writeStringList(tags);
-    }
 
     public String getTitle() {
         return title;
@@ -73,7 +73,7 @@ public class FeedItem implements Parcelable {
         return author;
     }
 
-    public List<String> getTags() {
+    public String getTags() {
         return tags;
     }
 }

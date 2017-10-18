@@ -16,6 +16,14 @@ public class Feed implements Parcelable {
     public Feed() {
     }
 
+    public Feed(String title, String link, String description, String modified, List<FeedItem> items) {
+        this.title = title;
+        this.link = link;
+        this.description = description;
+        this.modified = modified;
+        this.items = items;
+    }
+
     protected Feed(Parcel in) {
         title = in.readString();
         link = in.readString();

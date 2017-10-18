@@ -1,14 +1,10 @@
 package com.ipvans.flickrgallery.domain;
 
-import android.text.TextUtils;
-
+import com.ipvans.flickrgallery.data.SchedulerProvider;
 import com.ipvans.flickrgallery.data.model.Feed;
 import com.ipvans.flickrgallery.data.repository.FeedRepository;
 import com.ipvans.flickrgallery.di.ApplicationScope;
 import com.ipvans.flickrgallery.domain.model.Response;
-
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -21,25 +17,21 @@ import static com.ipvans.flickrgallery.domain.model.Response.loading;
 @ApplicationScope
 public class FeedInteractorImpl implements FeedInteractor {
 
-    private final FeedRepository feedRepository;
-
     private BehaviorSubject<Response<Feed>> responseSubject = BehaviorSubject.createDefault(loading());
-    private PublishSubject<List<String>> updateSubject = PublishSubject.create();
+    private PublishSubject<UpdateEvent> updateSubject = PublishSubject.create();
 
     @Inject
-    public FeedInteractorImpl(FeedRepository feedRepository) {
-        this.feedRepository = feedRepository;
-
-        updateSubject.map(tags -> TextUtils.join(",", tags))
+    public FeedInteractorImpl(FeedRepository feedRepository, SchedulerProvider schedulerProvider) {
+        updateSubject
                 .doOnNext(ignored -> responseSubject.onNext(loading()))
                 .switchMap(it ->
-                        feedRepository.getFeed(it, false).toObservable()
+                        feedRepository.getFeed(it.getTags(), it.isForced()).toObservable()
                                 .map(Response::ok)
                                 .onErrorReturn(Response::error)
                 )
+                .observeOn(schedulerProvider.io())
                 .subscribe(responseSubject);
     }
-
 
     @Override
     public Observable<Response<Feed>> observe() {
@@ -47,7 +39,8 @@ public class FeedInteractorImpl implements FeedInteractor {
     }
 
     @Override
-    public void getFeed(List<String> tags, boolean forceUpdate) {
-
+    public void getFeed(UpdateEvent event) {
+        updateSubject.onNext(event);
     }
+
 }

@@ -28,15 +28,20 @@ public class FeedRepositoryImpl implements FeedRepository {
     @Override
     public Single<Feed> getFeed(String tags, boolean forceUpdate) {
         return Single.just(forceUpdate)
-                .flatMap(force -> force ?
-                        getFromApi(tags) :
-                        Single.just(storage.get())
-                                .flatMap(it -> it.blockingGet().isPresent() ?
-                                        it.map(Optional::get) : getFromApi(tags)));
+                .flatMap(force -> {
+                            if (force) {
+                                return getFromApi(tags);
+                            } else {
+                                return Single.just(storage.get())
+                                        .flatMap(it -> it.blockingGet().isPresent() ?
+                                                it.map(Optional::get) : getFromApi(tags));
+                            }
+                        }
+                );
     }
 
     private Single<Feed> getFromApi(String tags) {
-        return api.getFeed(FORMAT, tags, NO_CALLBACK);
+        return api.getFeed(FORMAT, tags, NO_CALLBACK).doOnSuccess(storage::save);
     }
 
 }
