@@ -37,7 +37,7 @@ public class InteractorTest {
     @Test
     public void getActualFeed() {
         interactor.observe()
-//                .filter(it -> !it.isLoading())
+                .filter(it -> !it.isLoading())
                 .subscribe(observer);
 
         interactor.getFeed(new UpdateEvent("", true));
