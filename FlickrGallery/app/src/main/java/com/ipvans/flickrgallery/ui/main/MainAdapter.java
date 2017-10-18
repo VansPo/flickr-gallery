@@ -2,7 +2,11 @@ package com.ipvans.flickrgallery.ui.main;
 
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +16,22 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.ipvans.flickrgallery.R;
 import com.ipvans.flickrgallery.data.model.FeedItem;
+import com.ipvans.flickrgallery.utils.NoUnderlineClickableSpan;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
+    private final TagClickListener tagClickListener;
+
     private LayoutInflater inflater;
     private List<FeedItem> items = new ArrayList<>();
+
+    public MainAdapter(TagClickListener tagClickListener) {
+        this.tagClickListener = tagClickListener;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -30,7 +42,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.bind(items.get(position), position == items.size() - 1);
+        holder.bind(items.get(position), position == items.size() - 1, tagClickListener);
     }
 
     @Override
@@ -55,7 +67,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             divider = itemView.findViewById(R.id.divider);
         }
 
-        void bind(FeedItem item, boolean isLast) {
+        void bind(FeedItem item, boolean isLast, TagClickListener listener) {
             if (item.getMedia() != null && !TextUtils.isEmpty(item.getMedia().getUrl())) {
                 Glide.with(itemView.getContext())
                         .load(item.getMedia().getUrl())
@@ -64,8 +76,21 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             }
             title.setText(item.getTitle());
             author.setText(itemView.getContext().getString(R.string.author, item.getAuthor()));
-            tags.setText(item.getTags());
             divider.setVisibility(isLast ? View.GONE : View.VISIBLE);
+
+            final SpannableString ss = new SpannableString(item.getTags());
+            final List<String> items = Arrays.asList(item.getTags().split(" "));
+            int start = 0, end;
+            for (String tag : items) {
+                end = start + tag.length();
+                if (start < end) {
+                    ss.setSpan(new NoUnderlineClickableSpan(v -> listener.onTagClicked(tag)),
+                            start, end, 0);
+                }
+                start += tag.length() + 1;
+            }
+            tags.setMovementMethod(LinkMovementMethod.getInstance());
+            tags.setText(ss, TextView.BufferType.SPANNABLE);
         }
     }
 
@@ -74,6 +99,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         items.clear();
         items.addAll(data);
         result.dispatchUpdatesTo(this);
+    }
+
+    void clear() {
+        int size = items.size();
+        items.clear();
+        notifyItemRangeRemoved(0, size);
     }
 
     boolean isEmpty() {
@@ -109,6 +140,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
         }
+    }
+
+    interface TagClickListener {
+
+        void onTagClicked(String tag);
+
     }
 
 }

@@ -2,7 +2,6 @@ package com.ipvans.flickrgallery.ui.main;
 
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipe;
     private View empty;
     private View error;
+    private View retry;
     private View progress;
 
     private MenuItem search;
@@ -59,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         swipe = findViewById(R.id.swipe);
         empty = findViewById(R.id.empty);
         error = findViewById(R.id.error);
+        retry = findViewById(R.id.retry);
         progress = findViewById(R.id.progress);
 
         setSupportActionBar(toolbar);
@@ -83,11 +83,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        adapter = new MainAdapter();
+        adapter = new MainAdapter(this::setQuery);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
         swipe.setOnRefreshListener(() -> mainPresenter.search("", true));
+        retry.setOnClickListener(v -> mainPresenter.search(mainPresenter.getLatestState().tags, true));
     }
 
     @Override
@@ -122,8 +123,7 @@ public class MainActivity extends AppCompatActivity {
         });
         searchView = (SearchView) search.getActionView();
         if (!TextUtils.isEmpty(savedMenuState)) {
-            search.expandActionView();
-            searchView.setQuery(savedMenuState, false);
+            setQuery(savedMenuState);
         }
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -141,6 +141,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         return true;
+    }
+
+    private void setQuery(String query) {
+        if (searchView != null) {
+            search.expandActionView();
+            searchView.setQuery(query, false);
+        }
     }
 
     private void restoreState(Bundle bundle) {
@@ -205,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showEmpty() {
+        adapter.clear();
         dismissSnackbar();
         progress.setVisibility(View.GONE);
         error.setVisibility(View.GONE);

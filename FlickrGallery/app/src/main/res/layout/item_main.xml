@@ -61,6 +61,8 @@
         android:hint="@string/no_tags"
         android:textAppearance="?android:textAppearanceSmall"
         android:textColor="@color/blue"
+        android:maxLines="2"
+        android:ellipsize="end"
         app:layout_constraintLeft_toRightOf="@id/tags_label"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/separator" />

@@ -4,4 +4,5 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:text="@string/empty"
-    android:textAppearance="?android:textAppearanceMedium"/>
+    android:background="@color/colorPrimary"
+    android:textAppearance="?android:textAppearanceMediumInverse"/>
