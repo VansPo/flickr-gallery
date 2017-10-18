@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.hadisatrio.optional.Optional;
 import com.ipvans.flickrgallery.data.SchedulerProvider;
 import com.ipvans.flickrgallery.data.model.Feed;
+import com.ipvans.flickrgallery.di.AppContext;
 import com.ipvans.flickrgallery.di.ApplicationScope;
 
 import javax.inject.Inject;

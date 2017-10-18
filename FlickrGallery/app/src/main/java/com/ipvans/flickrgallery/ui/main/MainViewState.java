@@ -31,4 +31,14 @@ public class MainViewState {
     public String getTags() {
         return tags;
     }
+
+    @Override
+    public String toString() {
+        return "MainViewState{" +
+                "loading=" + loading +
+                ", error=" + error +
+                ", data=" + data +
+                ", tags='" + tags + '\'' +
+                '}';
+    }
 }

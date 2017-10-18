@@ -2,9 +2,15 @@ package com.ipvans.flickrgallery.data;
 
 import com.google.gson.Gson;
 import com.ipvans.flickrgallery.BuildConfig;
+import com.ipvans.flickrgallery.data.model.Feed;
+import com.ipvans.flickrgallery.data.repository.FeedRepository;
+import com.ipvans.flickrgallery.data.repository.FeedRepositoryImpl;
 import com.ipvans.flickrgallery.data.source.api.FlickrRestService;
+import com.ipvans.flickrgallery.data.source.storage.SharedPrefsStorage;
+import com.ipvans.flickrgallery.data.source.storage.Storage;
 import com.ipvans.flickrgallery.di.Endpoint;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.Scheduler;
@@ -77,4 +83,15 @@ public class DataModule {
             }
         };
     }
+
+    @Provides
+    FeedRepository provideFeedRepository(FeedRepositoryImpl feedRepository) {
+        return feedRepository;
+    }
+
+    @Provides
+    Storage<Feed> provideStorage(SharedPrefsStorage storage) {
+        return storage;
+    }
+
 }
