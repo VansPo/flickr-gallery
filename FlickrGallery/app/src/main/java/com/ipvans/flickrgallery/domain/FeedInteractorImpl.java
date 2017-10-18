@@ -26,10 +26,10 @@ public class FeedInteractorImpl implements FeedInteractor {
                 .doOnNext(ignored -> responseSubject.onNext(loading()))
                 .switchMap(it ->
                         feedRepository.getFeed(it.getTags(), it.isForced()).toObservable()
+                                .subscribeOn(schedulerProvider.io())
                                 .map(Response::ok)
                                 .onErrorReturn(Response::error)
                 )
-                .observeOn(schedulerProvider.io())
                 .subscribe(responseSubject);
     }
 

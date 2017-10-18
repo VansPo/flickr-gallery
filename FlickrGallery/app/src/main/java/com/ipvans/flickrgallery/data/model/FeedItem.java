@@ -53,6 +53,34 @@ public class FeedItem implements Parcelable {
         }
     };
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FeedItem feedItem = (FeedItem) o;
+
+        if (title != null ? !title.equals(feedItem.title) : feedItem.title != null) return false;
+        if (link != null ? !link.equals(feedItem.link) : feedItem.link != null) return false;
+        if (media != null ? !media.equals(feedItem.media) : feedItem.media != null) return false;
+        if (published != null ? !published.equals(feedItem.published) : feedItem.published != null)
+            return false;
+        if (author != null ? !author.equals(feedItem.author) : feedItem.author != null)
+            return false;
+        return tags != null ? tags.equals(feedItem.tags) : feedItem.tags == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title != null ? title.hashCode() : 0;
+        result = 31 * result + (link != null ? link.hashCode() : 0);
+        result = 31 * result + (media != null ? media.hashCode() : 0);
+        result = 31 * result + (published != null ? published.hashCode() : 0);
+        result = 31 * result + (author != null ? author.hashCode() : 0);
+        result = 31 * result + (tags != null ? tags.hashCode() : 0);
+        return result;
+    }
+
     public String getTitle() {
         return title;
     }

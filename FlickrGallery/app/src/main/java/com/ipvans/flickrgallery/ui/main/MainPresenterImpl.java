@@ -1,5 +1,7 @@
 package com.ipvans.flickrgallery.ui.main;
 
+import android.util.Log;
+
 import com.ipvans.flickrgallery.data.SchedulerProvider;
 import com.ipvans.flickrgallery.di.PerActivity;
 import com.ipvans.flickrgallery.domain.FeedInteractor;

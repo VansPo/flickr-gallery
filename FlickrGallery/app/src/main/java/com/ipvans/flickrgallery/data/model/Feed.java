@@ -58,6 +58,32 @@ public class Feed implements Parcelable {
         dest.writeTypedList(items);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Feed feed = (Feed) o;
+
+        if (title != null ? !title.equals(feed.title) : feed.title != null) return false;
+        if (link != null ? !link.equals(feed.link) : feed.link != null) return false;
+        if (description != null ? !description.equals(feed.description) : feed.description != null)
+            return false;
+        if (modified != null ? !modified.equals(feed.modified) : feed.modified != null)
+            return false;
+        return items != null ? items.equals(feed.items) : feed.items == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title != null ? title.hashCode() : 0;
+        result = 31 * result + (link != null ? link.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (modified != null ? modified.hashCode() : 0);
+        result = 31 * result + (items != null ? items.hashCode() : 0);
+        return result;
+    }
+
     public String getTitle() {
         return title;
     }
