@@ -63,6 +63,11 @@ public class MainPresenterImpl implements MainPresenter<MainViewState> {
     }
 
     @Override
+    public MainViewState getLatestState() {
+        return stateSubject.getValue();
+    }
+
+    @Override
     public void search(String tags, boolean force) {
         searchSubject.onNext(new UpdateEvent(tags, force));
     }

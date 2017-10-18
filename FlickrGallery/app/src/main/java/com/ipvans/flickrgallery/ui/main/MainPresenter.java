@@ -12,6 +12,8 @@ public interface MainPresenter<T> {
 
     Observable<T> observe();
 
+    T getLatestState();
+
     void search(String tags, boolean force);
 
 }

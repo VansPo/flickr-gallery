@@ -1,32 +1,36 @@
 package com.ipvans.flickrgallery.ui.main;
 
+import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.ipvans.flickrgallery.R;
-import com.ipvans.flickrgallery.data.model.Feed;
 import com.ipvans.flickrgallery.data.model.FeedItem;
 import com.ipvans.flickrgallery.ui.App;
-import com.ipvans.flickrgallery.utils.DeviceUtils;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
-import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String RECYCLER_STATE ="RECYCLER_STATE";
+    private static final String SCREEN_STATE ="SCREEN_STATE";
+    private static final String MENU_STATE ="MENU_STATE";
 
     @Inject
     MainPresenter<MainViewState> mainPresenter;
@@ -39,7 +43,11 @@ public class MainActivity extends AppCompatActivity {
     private View error;
     private View progress;
 
+    private MenuItem search;
+    private SearchView searchView;
     private Snackbar snackbar;
+
+    private String savedMenuState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,16 @@ public class MainActivity extends AppCompatActivity {
                 .inject(this);
 
         initViews();
+
+        mainPresenter.onAttach();
+        mainPresenter.observe()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::setData);
+
+        if (savedInstanceState == null)
+            mainPresenter.search("", false);
+        else
+            restoreState(savedInstanceState);
     }
 
     private void initViews() {
@@ -73,20 +91,69 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        mainPresenter.onAttach();
-        mainPresenter.observe()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::setData);
-
-        mainPresenter.search("", true);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(RECYCLER_STATE, recyclerView.getLayoutManager().onSaveInstanceState());
+        outState.putParcelable(SCREEN_STATE, mainPresenter.getLatestState());
+        outState.putString(MENU_STATE, mainPresenter.getLatestState().getTags());
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         mainPresenter.onDetach();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        search = toolbar.getMenu().findItem(R.id.action_search);
+        search.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                return true;
+            }
+        });
+        searchView = (SearchView) search.getActionView();
+        if (!TextUtils.isEmpty(savedMenuState)) {
+            search.expandActionView();
+            searchView.setQuery(savedMenuState, false);
+        }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mainPresenter.search(query, true);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (!newText.equals(mainPresenter.getLatestState().getTags()))
+                    mainPresenter.search(newText, true);
+                return true;
+            }
+        });
+
+        return true;
+    }
+
+    private void restoreState(Bundle bundle) {
+        Parcelable recyclerState = bundle.getParcelable(RECYCLER_STATE);
+        MainViewState screenState = bundle.getParcelable(SCREEN_STATE);
+        savedMenuState = bundle.getString(MENU_STATE);
+        if (recyclerState != null && screenState != null) {
+            screenState.tags = savedMenuState;
+            screenState.extra = recyclerState;
+            mainPresenter.restoreState(screenState);
+        } else {
+            mainPresenter.search("", false);
+        }
     }
 
     private void setData(MainViewState state) {
@@ -100,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
             else
                 showEmpty();
         }
+        if (state.extra != null)
+            recyclerView.getLayoutManager().onRestoreInstanceState(state.extra);
     }
 
     private void showLoading() {
