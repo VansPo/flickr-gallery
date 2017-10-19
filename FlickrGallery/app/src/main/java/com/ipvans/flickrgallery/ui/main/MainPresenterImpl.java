@@ -17,13 +17,15 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
+import static com.ipvans.flickrgallery.ui.main.MainViewState.*;
+
 @PerActivity
 public class MainPresenterImpl implements MainPresenter<MainViewState> {
 
     private final FeedInteractor interactor;
     private final SchedulerProvider schedulers;
 
-    private BehaviorSubject<MainViewState> stateSubject = BehaviorSubject.create();
+    private BehaviorSubject<MainViewState> stateSubject = BehaviorSubject.createDefault(empty());
     private PublishSubject<UpdateEvent> searchSubject = PublishSubject.create();
 
     private Disposable disposable = new CompositeDisposable();
@@ -42,6 +44,12 @@ public class MainPresenterImpl implements MainPresenter<MainViewState> {
                 interactor.observe(),
                 (tags, feed) -> new MainViewState(feed.isLoading(),
                         feed.getError(), feed.getData(), tags.getTags()))
+                .withLatestFrom(stateSubject,
+                        (newState, oldState) -> new MainViewState(
+                                newState.isLoading(), newState.getError(),
+                                newState.getData() != null ? newState.getData() : oldState.getData(),
+                                newState.getTags()
+                        ))
                 .observeOn(schedulers.io())
                 .subscribeWith(stateSubject)
                 .onSubscribe(disposable);

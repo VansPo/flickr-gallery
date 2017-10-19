@@ -23,12 +23,14 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String RECYCLER_STATE ="RECYCLER_STATE";
-    private static final String SCREEN_STATE ="SCREEN_STATE";
-    private static final String MENU_STATE ="MENU_STATE";
+    private static final String RECYCLER_STATE = "RECYCLER_STATE";
+    private static final String SCREEN_STATE = "SCREEN_STATE";
+    private static final String MENU_STATE = "MENU_STATE";
 
     @Inject
     MainPresenter<MainViewState> mainPresenter;
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private Snackbar snackbar;
 
     private String savedMenuState;
+
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +76,9 @@ public class MainActivity extends AppCompatActivity {
         initViews();
 
         mainPresenter.onAttach();
-        mainPresenter.observe()
+        disposable.add(mainPresenter.observe()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::setData);
+                .subscribe(this::setData));
 
         if (savedInstanceState == null)
             mainPresenter.search("", false);
@@ -103,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mainPresenter.onDetach();
+        disposable.dispose();
     }
 
     @Override
@@ -164,15 +169,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setData(MainViewState state) {
+        if (state.getData() != null && state.getData().getItems() != null &&
+                !state.getData().getItems().isEmpty())
+            showContent(state.getData().getItems());
+        else
+            showEmpty();
         if (state.isLoading()) {
             showLoading();
         } else if (state.getError() != null) {
             showError(state.getError());
-        } else {
-            if (state.getData().getItems() != null && !state.getData().getItems().isEmpty())
-                showContent(state.getData().getItems());
-            else
-                showEmpty();
         }
         if (state.extra != null)
             recyclerView.getLayoutManager().onRestoreInstanceState(state.extra);

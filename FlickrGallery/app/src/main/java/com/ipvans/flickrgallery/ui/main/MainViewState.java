@@ -100,4 +100,8 @@ public class MainViewState implements Parcelable {
         result = 31 * result + (tags != null ? tags.hashCode() : 0);
         return result;
     }
+
+    public static MainViewState empty() {
+        return new MainViewState(false, null, null, "");
+    }
 }
