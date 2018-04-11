@@ -65,13 +65,11 @@ public class Feed implements Parcelable {
 
         Feed feed = (Feed) o;
 
-        if (title != null ? !title.equals(feed.title) : feed.title != null) return false;
-        if (link != null ? !link.equals(feed.link) : feed.link != null) return false;
-        if (description != null ? !description.equals(feed.description) : feed.description != null)
-            return false;
-        if (modified != null ? !modified.equals(feed.modified) : feed.modified != null)
-            return false;
-        return items != null ? items.equals(feed.items) : feed.items == null;
+        return (title != null ? title.equals(feed.title) : feed.title == null)
+                && (link != null ? link.equals(feed.link) : feed.link == null)
+                && (description != null ? description.equals(feed.description) : feed.description == null)
+                && (modified != null ? modified.equals(feed.modified) : feed.modified == null)
+                && (items != null ? items.equals(feed.items) : feed.items == null);
     }
 
     @Override
@@ -102,5 +100,16 @@ public class Feed implements Parcelable {
 
     public List<FeedItem> getItems() {
         return items;
+    }
+
+    @Override
+    public String toString() {
+        return "Feed{" +
+                "title='" + title + '\'' +
+                ", link='" + link + '\'' +
+                ", description='" + description + '\'' +
+                ", modified='" + modified + '\'' +
+                ", items=" + items +
+                '}';
     }
 }

@@ -6,9 +6,13 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url "http://dl.bintray.com/jetbrains/spek" }
     }
     dependencies {
         classpath gradlePlugins.gradle
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$ver.kotlinVersion"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$ver.JUnitPlatform"
+        classpath "de.mannodermaus.gradle.plugins:android-junit5:$ver.androidJUnit5"
     }
 }
 

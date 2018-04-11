@@ -35,4 +35,13 @@ public class Response<T> {
     public T getData() {
         return data;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "loading=" + loading +
+                ", e=" + e +
+                ", data=" + data +
+                '}';
+    }
 }

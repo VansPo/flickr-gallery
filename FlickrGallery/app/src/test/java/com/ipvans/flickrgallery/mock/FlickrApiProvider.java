@@ -9,12 +9,14 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static okhttp3.logging.HttpLoggingInterceptor.Level.BODY;
+import static okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS;
+import static okhttp3.logging.HttpLoggingInterceptor.Level.NONE;
 
 public class FlickrApiProvider {
 
     public static FlickrRestService provideRestService() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(System.out::println);
-        logging.setLevel(BODY);
+        logging.setLevel(HEADERS);
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(logging)
                 .build();

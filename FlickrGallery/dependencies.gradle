@@ -1,24 +1,30 @@
 ext.gradlePlugins = [
-        gradle: 'com.android.tools.build:gradle:3.0.0-rc1'
+        gradle: 'com.android.tools.build:gradle:3.1.1'
 ]
 
 ext.ver = [
-        minSdk    : 16,
-        compileSdk: 26,
-        targetSdk : 26,
-        buildTools: "26.0.2",
+        minSdk       : 16,
+        compileSdk   : 26,
+        targetSdk    : 26,
+        buildTools   : "27.0.3",
 
-        support   : "26.1.0"
+        support      : "26.1.0",
+
+        kotlinVersion: "1.2.31",
+        androidJUnit5: "1.0.12",
+        JUnitPlatform: "1.0.1"
 ]
 
 ext.libs = [
+        kotlin             : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$ver.kotlinVersion",
+
         supportV4          : "com.android.support:support-v4:$ver.support",
         supportAppcompat   : "com.android.support:appcompat-v7:$ver.support",
         supportDesign      : "com.android.support:design:$ver.support",
         supportRecyclerView: "com.android.support:recyclerview-v7:$ver.support",
         constraintLayout   : 'com.android.support.constraint:constraint-layout:1.0.2',
 
-        glide                 : "com.github.bumptech.glide:glide:3.7.0",
+        glide              : "com.github.bumptech.glide:glide:3.7.0",
 
         retrofit2          : "com.squareup.retrofit2:retrofit:2.3.0",
         retrofitConverter  : "com.squareup.retrofit2:converter-gson:2.3.0",

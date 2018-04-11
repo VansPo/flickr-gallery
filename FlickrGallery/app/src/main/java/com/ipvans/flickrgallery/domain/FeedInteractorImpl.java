@@ -30,6 +30,7 @@ public class FeedInteractorImpl implements FeedInteractor {
                                 .map(Response::ok)
                                 .onErrorReturn(Response::error)
                 )
+                .subscribeOn(schedulerProvider.io())
                 .subscribe(responseSubject);
     }
 
